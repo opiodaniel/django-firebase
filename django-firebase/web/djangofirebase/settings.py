@@ -141,3 +141,8 @@ firebase_admin.initialize_app(FIREBASE_CRED)
 # This allows you to import `db` from settings in any part of your app.
 db = firestore.client()
 
+
+#link for enabling Cloud Firestore API  --> https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=django-fw
+#link for creating firebase datastore(database) --> https://console.cloud.google.com/datastore/setup?project=django-fw
+
+
