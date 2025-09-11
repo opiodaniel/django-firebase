@@ -1,0 +1,185 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Receipt</title>
+<style>
+    body {
+        font-family: monospace;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .receipt {
+        background: #fff;
+        max-width: 380px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .center {
+        text-align: center;
+    }
+    h1 {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+    .info p {
+        margin: 2px 0;
+        font-size: 0.9rem;
+    }
+    .dashed {
+        border-top: 1px dashed #000;
+        margin: 10px 0;
+    }
+    .details p {
+        margin: 2px 0;
+        display: flex;
+        justify-content: space-between;
+    }
+    .section-title {
+        font-weight: bold;
+        margin-bottom: 4px;
+        text-decoration: underline;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+    }
+    table th, table td {
+        text-align: left;
+        padding: 2px 0;
+    }
+    table td:last-child {
+        text-align: right;
+    }
+    .summary p {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin: 4px 0;
+    }
+    .barcode {
+        margin: 1rem 0;
+        text-align: center;
+    }
+    .footer {
+        text-align: center;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+    @media print {
+        body { background: #fff; }
+        .receipt { border: none; box-shadow: none; margin: 0; padding: 0; }
+        .print-btn { display: none; }
+    }
+    .print-btn {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.5rem;
+    }
+</style>
+</head>
+<body>
+
+<div class="receipt">
+    <div class="center">
+        <h1>Flashtech Workshop</h1>
+        <div class="info">
+            <p>123 Main Street</p>
+            <p>Nairobi, KE 00100</p>
+            <p>Tel: +254 712 345 678</p>
+        </div>
+    </div>
+
+    <div class="dashed"></div>
+
+    <div class="details">
+        <p><span>Order ID:</span> <span>{{ order_id }}</span></p>
+        <p><span>Order Type:</span> <span>{{ order_type }}</span></p>
+    </div>
+
+    <div class="dashed"></div>
+
+    <!-- Owner Details -->
+    <div class="details">
+        <p class="section-title">Order Owner</p>
+        <p><span>Name:</span> <span>{{ order_owner.name }}</span></p>
+        <p><span>Email:</span> <span>{{ order_owner.email }}</span></p>
+        <p><span>Phone:</span> <span>{{ order_owner.phone }}</span></p>
+    </div>
+
+    <div class="dashed"></div>
+
+    <!-- Mechanic Details -->
+    <div class="details">
+        <p class="section-title">Order Mechanic</p>
+        <p><span>Name:</span> <span>{{ order_mechanic.name }}</span></p>
+    </div>
+
+    <div class="dashed"></div>
+
+    <!-- Vehicle Details -->
+    <div class="details">
+        <p class="section-title">Vehicle</p>
+        <p><span>Mileage:</span> <span>{{ mileage }}</span></p>
+        <p><span>Name:</span> <span>{{ vehicle_name }}</span></p>
+        <p><span>Number Plate:</span> <span>{{ vehicle_number_plate }}</span></p>
+    </div>
+
+    <div class="dashed"></div>
+
+    <!-- Items -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Qty</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.qty }}</td>
+                <td>${{ item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="dashed"></div>
+
+    <div class="summary">
+        <p><span>Sub Total</span> <span>Shs.{{ amount_to_pay|add_commas }}</span></p>
+        <p><span>Paid</span> <span>Shs.{{ amount_paid|default:0 }}</span></p>
+        <p><span>Change</span> <span>Shs.{{ balance|add_commas }}</span></p>
+    </div>
+
+    <div class="dashed"></div>
+
+    <div class="footer">
+        <p>THANK YOU!</p>
+        <p>Glad to see you again!</p>
+    </div>
+</div>
+
+
+    <div class="text-center mt-4">
+<!--        <button onclick="window.print()" class="btn btn-primary print-btn">Print Order</button>-->
+        <button onclick="window.print()" class="print-btn">Print Receipt</button>
+        <a href="{% url 'order_list' %}" class="btn btn-secondary ms-2 print-btn">Back to Orders</a>
+    </div>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}All Posts{% endblock %}
+
+{% block content %}
+  <h2>Blog Posts</h2>
+{% if post %}
+  <div class="post">
+   <h2>Post Title: {{ post.title }}</h2>
+  <div class="meta">
+     Author: {{ post.author }}
+  </div>
+  <div class="meta">
+     Date published: {{ post.created_at_formatted }}
+  </div>
+      <div class="meta">
+         Content:  {{post.content}}
+      </div>
+  </div>
+
+{% else %}
+<p>No blog posts found. Why not create one?</p>
+{% endif %}
+{% endblock %}
