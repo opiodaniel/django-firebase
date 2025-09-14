@@ -14,5 +14,4 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENTRYPOINT [ "gunicorn", "djangofirebase.wsgi", "-b", "0.0.0.0:8000"]
 CMD ["gunicorn", "--chdir", "web", "djangofirebase.wsgi:application", "--bind", "0.0.0.0:8000"]
