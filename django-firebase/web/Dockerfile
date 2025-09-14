@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-CMD ["gunicorn", "--chdir", "web", "djangofirebase.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "--chdir", "django-firebase/web", "djangofirebase.wsgi:application", "--bind", "0.0.0.0:8000"]
