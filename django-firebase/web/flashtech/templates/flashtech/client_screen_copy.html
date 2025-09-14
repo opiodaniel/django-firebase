@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spark Automotive — Client Screen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+    .fade-in { animation: fadeIn 0.8s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+  <!-- Logo -->
+  <div class="text-center mb-8">
+    <img src="https://via.placeholder.com/200x60?text=SPARK+AUTOMOTIVE" alt="Logo" class="h-16 mx-auto mb-4">
+    <h1 class="text-3xl font-bold text-gray-800">Spark Automotive</h1>
+    <p class="text-gray-600">Your Trusted Vehicle Care Partner</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
+
+    <!-- Welcome State -->
+    <div id="welcome" class="space-y-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-orange-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-2">Welcome!</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Your vehicle is being serviced.<br><br>
+        Please wait here — your service details will appear automatically.
+      </p>
+      <div class="mt-6 p-4 bg-gray-50 rounded-2xl inline-block">
+        <span class="text-sm text-gray-500">Waiting for order selection...</span>
+      </div>
+    </div>
+
+    <!-- Order Details (hidden by default) -->
+    <div id="order-details" style="display:none;" class="space-y-6 fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Service Details</h2>
+
+      <div class="bg-gray-50 rounded-2xl p-6 text-left space-y-3 mb-6">
+        <div class="flex justify-between"><span class="text-gray-600">Client Name:</span> <strong id="client-name">—</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">Vehicle:</span> <strong id="vehicle">—</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">Phone:</span> <strong id="phone">—</strong></div>
+        <div class="border-t border-gray-200 pt-3 mt-3 flex justify-between">
+          <span class="text-gray-600 font-medium">Amount Due:</span>
+          <strong id="amount-due" class="text-2xl text-orange-600 font-bold">$0.00</strong>
+        </div>
+      </div>
+
+      <div class="p-4 bg-green-50 rounded-2xl">
+        <p class="text-green-800 font-medium" id="status">✅ Waiting for order...</p>
+      </div>
+
+      <div class="mt-6 text-xs text-gray-500">
+        Order ID: <span id="order-id">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-12 text-center text-gray-500 text-sm">
+    <p>Thank you for choosing Spark Automotive</p>
+    <p>📍 123 Auto Lane, Cityville • 📞 (555) 123-4567</p>
+  </div>
+
+  <!-- WebSocket Debug Panel -->
+  <div class="mt-8 p-4 bg-gray-100 rounded-lg max-w-md mx-auto">
+    <h3 class="font-semibold text-gray-800 mb-2 text-center">🔌 WebSocket Debug (Client)</h3>
+    <div id="client-log" class="text-xs text-gray-600 font-mono h-32 overflow-y-auto bg-gray-50 p-2 rounded"></div>
+  </div>
+
+  <script>
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/client-screen/');
+
+    const log = (message) => {
+      const logDiv = document.getElementById('client-log');
+      const timestamp = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    };
+
+    socket.onopen = function() {
+      log("🟢 Connected to WebSocket server");
+    };
+
+    socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      log("📥 Received from server: " + e.data);
+
+      if (data.type === "order_updated") {
+        log("🎯 Received ORDER UPDATE: " + data.data.id);
+
+        // Hide welcome, show order
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("order-details").style.display = "block";
+
+        // Update DOM elements
+        document.getElementById("client-name").textContent = data.data.client_name || "—";
+        document.getElementById("vehicle").textContent = data.data.vehicle || "—";
+        document.getElementById("phone").textContent = data.data.phone || "—";
+        document.getElementById("amount-due").textContent = "$" + (data.data.amount_due || 0);
+        document.getElementById("order-id").textContent = data.data.id || "—";
+        document.getElementById("status").textContent = "✅ Order active";
+
+        log("✨ UI updated with order data");
+      } else {
+        log("ℹ️ Unrecognized message type: " + data.type);
+      }
+    };
+
+    socket.onerror = function(error) {
+      log("❌ WebSocket Error: " + error.message);
+    };
+
+    socket.onclose = function() {
+      log("🔴 WebSocket disconnected");
+    };
+
+    // Keep alive ping every 30s
+    setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        log("📡 Sending ping...");
+        socket.send(JSON.stringify({ action: "ping" }));
+      }
+    }, 30000);
+  </script>
+
+</body>
+</html>
