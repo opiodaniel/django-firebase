@@ -216,7 +216,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-      const orderId = "{{ order.id }}";  // ✅ This comes from context passed by views.py
+      const orderId = "{{ order_id }}";  // ✅ This comes from context passed by views.py
       log("🔍 Detected Order ID: " + orderId);
 
       if (!orderId || orderId === "") {
