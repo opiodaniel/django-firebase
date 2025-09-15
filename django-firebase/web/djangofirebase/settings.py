@@ -83,10 +83,11 @@ TEMPLATES = [
 ASGI_APPLICATION = 'djangofirebase.asgi.application'
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            # The 'hosts' key takes a list of URLs
+            "hosts": [os.environ.get("REDIS_URL")],
         },
     },
 }
