@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENTRYPOINT [ "gunicorn", "djangofirebase.wsgi", "-b", "0.0.0.0:8000"]
+CMD ["gunicorn", "djangofirebase.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:10000"]
