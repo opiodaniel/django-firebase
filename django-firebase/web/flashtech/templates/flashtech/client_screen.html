@@ -83,7 +83,7 @@
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(protocol + '://' + window.location.host + '/ws/client-screen/');
-    //const socket = new WebSocket('wss://spark-automative.onrender.com/ws/client-screen/');
+
     //const socket = new WebSocket('ws://' + window.location.host + '/ws/client-screen/'); // used on my local computer
 
     const log = (message) => {
