@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-ri&2hzmy76@$wi!!9&al7^pc6ni9cn&+!)_u642t=8vm67uzq(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["spark-automative.onrender.com"]
+ALLOWED_HOSTS = ["spark-automative.onrender.com", "127.0.0.1"]
 
 
 # Application definition
@@ -91,6 +91,15 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
 
 
 # Database
