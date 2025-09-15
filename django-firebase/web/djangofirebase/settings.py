@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-ri&2hzmy76@$wi!!9&al7^pc6ni9cn&+!)_u642t=8vm67uzq(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["spark-automative.onrender.com"]
 
 
 # Application definition
