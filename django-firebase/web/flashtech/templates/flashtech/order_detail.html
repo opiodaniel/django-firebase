@@ -287,28 +287,27 @@
   </script>
 
   <script type="text/javascript">
-
-  var csrftoken = Cookies.get('csrftoken');
-  function csrfSafeMethod(method) {
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
+    var csrftoken = Cookies.get('csrftoken');
+    function csrfSafeMethod(method) {
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
-  });
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
 
-  $(document).ready(function () {
+    $(document).ready(function () {
 
-    // Get the confirm button by its ID
-  const confirmBtn = document.getElementById('confirmBtn');
+      // Get the confirm button by its ID
+      const confirmBtn = document.getElementById('confirmBtn');
 
-  confirmBtn.addEventListener('click', function(event) {
+      confirmBtn.addEventListener('click', function(event) {
         event.preventDefault(); // Prevents the default form submission
 
-        // Your recordAmount logic goes here, or you can call the function
+        // Your recordAmount logic goes here
         const url = "{% url 'record_amount_paid' order_id %}";
         const amountInput = document.getElementById('amount');
         let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
@@ -327,6 +326,7 @@
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         confirmBtn.disabled = true;
 
+        // **This is where you place the corrected $.ajax call**
         $.ajax({
           url: url,
           type: 'POST',
@@ -334,76 +334,80 @@
           dataType: 'json',
         })
         .done(function(data) {
+          // This block runs only on HTTP 200 OK
           handleResponse(data);
         })
         .fail(function(xhr, status, error) {
-          if (status === 'timeout') {
+          // This block runs for ANY HTTP error status code (4xx or 5xx)
+          if (xhr.responseJSON) {
+            // If the server returned JSON data with the error
+            handleResponse(xhr.responseJSON);
+          } else if (status === 'timeout') {
             showErrorMessage("Request timed out. Please check your connection.");
           } else {
-            try {
-              const data = JSON.parse(xhr.responseText);
-              handleResponse(data);
-            } catch (e) {
-              showErrorMessage("Network error. Please try again.");
-            }
+            // For other network or unknown errors
+            showErrorMessage("Network error. Please try again.");
           }
+        })
+        .always(function() {
+          // This block always runs, regardless of success or failure
           confirmBtn.innerHTML = originalText;
           confirmBtn.disabled = false;
         });
       });
 
+      function handleResponse(data) {
+        // The rest of your existing handleResponse logic...
+        const confirmBtn = document.querySelector('form button');
+        const originalText = 'Confirm';
+        confirmBtn.innerHTML = originalText;
+        confirmBtn.disabled = false;
 
-    function handleResponse(data) {
-      const confirmBtn = document.querySelector('form button');
-      const originalText = 'Confirm';
-      confirmBtn.innerHTML = originalText;
-      confirmBtn.disabled = false;
+        if (data.status === 'ok') {
+          const paidFormatted = Number(data.amount_paid).toLocaleString();
+          const change = parseFloat(data.change);
+          const changeFormatted = Math.abs(change).toLocaleString();
 
-      if (data.status === 'ok') {
-        const paidFormatted = Number(data.amount_paid).toLocaleString();
-        const change = parseFloat(data.change);
-        const changeFormatted = Math.abs(change).toLocaleString();
+          // Update the Amount Paid and Change displays directly
+          document.getElementById('amount-paid-display').textContent = paidFormatted;
+          document.getElementById('change-display').textContent = changeFormatted;
 
-        // Update the Amount Paid and Change displays directly
-        document.getElementById('amount-paid-display').textContent = paidFormatted;
-        document.getElementById('change-display').textContent = changeFormatted;
+          // Set the text color for change to be red if negative
+          const changeDisplayEl = document.getElementById('change-display');
+          if (change < 0) {
+            changeDisplayEl.style.color = '#dc2626'; // Tailwind's red-600
+          } else {
+            changeDisplayEl.style.color = ''; // Reset to default blue
+          }
 
-        // Set the text color for change to be red if negative
-        const changeDisplayEl = document.getElementById('change-display');
-        if (change < 0) {
-          changeDisplayEl.style.color = '#dc2626'; // Tailwind's red-600
+          // Show the print button after a successful payment
+          document.getElementById('printReceiptBtn').classList.remove('hidden');
+
+          // Update receipt template data
+          document.getElementById('receipt-paid').textContent = paidFormatted;
+          document.getElementById('receipt-change').textContent = changeFormatted;
+          const itemsContainer = document.getElementById('receiptItems');
+          itemsContainer.innerHTML = '';
+          if (data.order_items && Array.isArray(data.order_items)) {
+            data.order_items.forEach(item => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${item.name || 'Unknown Service'}</td>
+                <td>Shs.${(item.price || 0).toLocaleString()}</td>
+              `;
+              itemsContainer.appendChild(row);
+            });
+          }
+          document.getElementById('amount').value = '';
+
+        } else if (data.status === 'ko') {
+          let errorMsg = data.error || "Payment could not be processed.";
+          if (!errorMsg.trim()) errorMsg = "An unknown error occurred. Please try again.";
+          showErrorMessage(errorMsg);
         } else {
-          changeDisplayEl.style.color = ''; // Reset to default blue
+          showErrorMessage("Invalid response from server. Please contact support.");
         }
-
-        // Show the print button after a successful payment
-        document.getElementById('printReceiptBtn').classList.remove('hidden');
-
-        // Update receipt template data
-        document.getElementById('receipt-paid').textContent = paidFormatted;
-        document.getElementById('receipt-change').textContent = changeFormatted;
-        const itemsContainer = document.getElementById('receiptItems');
-        itemsContainer.innerHTML = '';
-        if (data.order_items && Array.isArray(data.order_items)) {
-          data.order_items.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${item.name || 'Unknown Service'}</td>
-              <td>Shs.${(item.price || 0).toLocaleString()}</td>
-            `;
-            itemsContainer.appendChild(row);
-          });
-        }
-        document.getElementById('amount').value = '';
-
-      } else if (data.status === 'ko') {
-        let errorMsg = data.error || "Payment could not be processed.";
-        if (!errorMsg.trim()) errorMsg = "An unknown error occurred. Please try again.";
-        showErrorMessage(errorMsg);
-      } else {
-        showErrorMessage("Invalid response from server. Please contact support.");
       }
-    }
 
       document.getElementById('printReceiptBtn').onclick = function() {
         const receiptContent = document.getElementById('receiptTemplate').innerHTML;
@@ -437,7 +441,7 @@
         };
       }
     });
-  </script>
+</script>
 
   <script>
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
