@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.http import HttpResponseNotFound, JsonResponse
 from djangofirebase.settings import db
-from firebase_admin import firestore
+from firebase_admin.firestore import firestore
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -27,6 +27,11 @@ def order_list(request):
     orders_ref = db.collection('flashtech-order')
     docs = orders_ref.stream()
     orders = []
+
+    # Fetch all orders from Firestore, sorted by created_at in descending order
+    # query = db.collection('flashtech-order').order_by('created_at', direction=firestore.Query.ASCENDING)
+    # Then, get the stream (iterator) from the query.
+    # docs = query.stream()
 
     for doc in docs:
         order_data = doc.to_dict()
