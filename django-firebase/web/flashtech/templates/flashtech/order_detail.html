@@ -131,7 +131,6 @@
       <div class="flex items-end">
         <button
           id="confirmBtn"
-          type="button"
           class="w-full bg-orange-500 text-white font-medium py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors"
         >
           Confirm
@@ -140,8 +139,10 @@
     </div>
 
     <div class="mt-4 p-4 text-center">
-        <button class="bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors transform">
-          <a href="{% url 'order_list' %}">Cancel..)Back To Order List Page</a>
+        <button
+                type="button"
+                class="bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors transform">
+               <a href="{% url 'order_list' %}">Cancel..)Back To Order List Page</a>
         </button>
     </div>
 
@@ -302,60 +303,59 @@
 
     $(document).ready(function () {
 
-      // Get the confirm button by its ID
-      const confirmBtn = document.getElementById('confirmBtn');
 
-      confirmBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevents the default form submission
+      // New, corrected code
+        const paymentForm = document.getElementById('payment-form');
 
-        // Your recordAmount logic goes here
-        const url = "{% url 'record_amount_paid' order_id %}";
-        const amountInput = document.getElementById('amount');
-        let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
+        paymentForm.addEventListener('submit', function(event) {
+          event.preventDefault(); // Prevents the default form submission
 
-        if (!amount_paid_str || isNaN(amount_paid_str)) {
-          showErrorMessage("Please enter a valid amount.");
-          return;
-        }
-        const amount_paid = parseFloat(amount_paid_str);
-        if (amount_paid < 0) {
-          showErrorMessage("Amount cannot be negative.");
-          return;
-        }
+          // The rest of your existing logic for handling the AJAX call and validation.
+          const url = "{% url 'record_amount_paid' order_id %}";
+          const amountInput = document.getElementById('amount');
+          let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
 
-        const originalText = confirmBtn.innerHTML;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        confirmBtn.disabled = true;
-
-        // **This is where you place the corrected $.ajax call**
-        $.ajax({
-          url: url,
-          type: 'POST',
-          data: { 'amount_paid': amount_paid_str },
-          dataType: 'json',
-        })
-        .done(function(data) {
-          // This block runs only on HTTP 200 OK
-          handleResponse(data);
-        })
-        .fail(function(xhr, status, error) {
-          // This block runs for ANY HTTP error status code (4xx or 5xx)
-          if (xhr.responseJSON) {
-            // If the server returned JSON data with the error
-            handleResponse(xhr.responseJSON);
-          } else if (status === 'timeout') {
-            showErrorMessage("Request timed out. Please check your connection.");
-          } else {
-            // For other network or unknown errors
-            showErrorMessage("Network error. Please try again.");
+          // Your validation logic
+          if (!amount_paid_str || isNaN(amount_paid_str)) {
+            showErrorMessage("Please enter a valid amount.");
+            return;
           }
-        })
-        .always(function() {
-          // This block always runs, regardless of success or failure
-          confirmBtn.innerHTML = originalText;
-          confirmBtn.disabled = false;
+          const amount_paid = parseFloat(amount_paid_str);
+          if (amount_paid < 0) {
+            showErrorMessage("Amount cannot be negative.");
+            return;
+          }
+
+          // Find the button inside the form to update its state
+          const confirmBtn = document.getElementById('confirmBtn');
+          const originalText = confirmBtn.innerHTML;
+          confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+          confirmBtn.disabled = true;
+
+          // The rest of your AJAX call, which seems correct
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: { 'amount_paid': amount_paid_str },
+            dataType: 'json',
+          })
+          .done(function(data) {
+            handleResponse(data);
+          })
+          .fail(function(xhr, status, error) {
+            if (xhr.responseJSON) {
+              handleResponse(xhr.responseJSON);
+            } else if (status === 'timeout') {
+              showErrorMessage("Request timed out. Please check your connection.");
+            } else {
+              showErrorMessage("Network error. Please try again.");
+            }
+          })
+          .always(function() {
+            confirmBtn.innerHTML = originalText;
+            confirmBtn.disabled = false;
+          });
         });
-      });
 
       function handleResponse(data) {
         // The rest of your existing handleResponse logic...
