@@ -101,6 +101,8 @@ CHANNEL_LAYERS = {
 #     },
 # }
 
+# daphne -p 8000 djangofirebase.asgi:application
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

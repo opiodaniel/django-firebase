@@ -130,7 +130,7 @@
 
       <div class="flex items-end">
         <button
-          onclick="recordAmount(event)"
+          id="confirmBtn"
           class="w-full bg-orange-500 text-white font-medium py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors"
         >
           Confirm
@@ -302,51 +302,56 @@
 
   $(document).ready(function () {
 
-    recordAmount = function(event) {
-      event.preventDefault();
-      const url = "{% url 'record_amount_paid' order_id %}";
-      const amountInput = document.getElementById('amount');
-      let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
+    // Get the confirm button by its ID
+  const confirmBtn = document.getElementById('confirmBtn');
 
-      if (!amount_paid_str || isNaN(amount_paid_str)) {
-        showErrorMessage("Please enter a valid amount.");
-        return;
-      }
-      const amount_paid = parseFloat(amount_paid_str);
-      if (amount_paid < 0) {
-        showErrorMessage("Amount cannot be negative.");
-        return;
-      }
+  confirmBtn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevents the default form submission
 
-      const confirmBtn = event.target.closest('button');
-      const originalText = confirmBtn.innerHTML;
-      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-      confirmBtn.disabled = true;
+        // Your recordAmount logic goes here, or you can call the function
+        const url = "{% url 'record_amount_paid' order_id %}";
+        const amountInput = document.getElementById('amount');
+        let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
 
-      $.ajax({
-        url: url,
-        type: 'POST',
-        data: { 'amount_paid': amount_paid_str },
-        dataType: 'json',
-      })
-      .done(function(data) {
-        handleResponse(data);
-      })
-      .fail(function(xhr, status, error) {
-        if (status === 'timeout') {
-          showErrorMessage("Request timed out. Please check your connection.");
-        } else {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            handleResponse(data);
-          } catch (e) {
-            showErrorMessage("Network error. Please try again.");
-          }
+        if (!amount_paid_str || isNaN(amount_paid_str)) {
+          showErrorMessage("Please enter a valid amount.");
+          return;
         }
-        confirmBtn.innerHTML = originalText;
-        confirmBtn.disabled = false;
+        const amount_paid = parseFloat(amount_paid_str);
+        if (amount_paid < 0) {
+          showErrorMessage("Amount cannot be negative.");
+          return;
+        }
+
+        const originalText = confirmBtn.innerHTML;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        confirmBtn.disabled = true;
+
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: { 'amount_paid': amount_paid_str },
+          dataType: 'json',
+        })
+        .done(function(data) {
+          handleResponse(data);
+        })
+        .fail(function(xhr, status, error) {
+          if (status === 'timeout') {
+            showErrorMessage("Request timed out. Please check your connection.");
+          } else {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              handleResponse(data);
+            } catch (e) {
+              showErrorMessage("Network error. Please try again.");
+            }
+          }
+          confirmBtn.innerHTML = originalText;
+          confirmBtn.disabled = false;
+        });
       });
-    };
+
 
     function handleResponse(data) {
       const confirmBtn = document.querySelector('form button');
