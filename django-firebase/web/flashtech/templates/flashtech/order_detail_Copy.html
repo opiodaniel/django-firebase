@@ -33,14 +33,13 @@
       color: #00b894;
     }
   </style>
-  <script src="{% static 'js/js.cookie.min.js' %}"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{#  <script src="{% static 'js/js.cookie.min.js' %}"></script>#}
 </head>
 <body class="min-h-screen ">
 
   <header class="bg-white shadow-sm border-b border-gray-200 w-full">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-      <img src="" alt="Spark Automotive Logo" class="h-10 object-contain" />
+      <img src="https://via.placeholder.com/120x40?text=SPARK+AUTOMOTIVE" alt="Spark Automotive Logo" class="h-10 object-contain" />
       <h1 class="text-2xl font-bold text-gray-800">Payment Terminal</h1>
     </div>
   </header>
@@ -101,56 +100,59 @@
       </div>
     </div>
 
-    <form id="payment-form" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Record Payment</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
-        <div>
-          <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
-            Amount Received (Shs.)
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-600">
-              Shs.
-            </div>
-            <input type="text"
-                   id="amount"
-                   name="amount_paid"
-                   min="0"
-                   step="100"
-                   placeholder="0.00"
-                   autocomplete="off"
-                   required
-                   class="w-full pl-10 pr-4 py-4 text-2xl font-bold text-gray-800 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-300"
-                   autofocus />
+  <form id="payment-form" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Record Payment</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+      <div>
+        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
+          Amount Received (Shs.)
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-600">
+            Shs.
           </div>
-        </div>
-
-        <div class="flex items-end">
-          <button
-            id="confirmBtn"
-            class="w-full bg-orange-500 text-white font-medium py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors"
-          >
-            Confirm
-          </button>
+          <input type="text"
+                 id="amount"
+                 name="amount_paid"
+                 min="0"
+                 step="100"
+                 placeholder="0.00"
+                 autocomplete="off"
+                 required
+                 class="w-full pl-10 pr-4 py-4 text-2xl font-bold text-gray-800 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-300"
+                 autofocus />
         </div>
       </div>
 
-      <div class="mt-4 p-4 text-center">
-          <button
-                  type="button"
-                  class="bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors transform">
-                 <a href="{% url 'order_list' %}">Cancel..)Back To Order List Page</a>
-          </button>
+      <div class="flex items-end">
+        <button
+          id="confirmBtn"
+          type="button"
+          class="w-full bg-orange-500 text-white font-medium py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors"
+        >
+          Confirm
+        </button>
       </div>
+    </div>
 
-      {% if error %}
-        <div class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
-          {{ error }}
-        </div>
-      {% endif %}
+    <div class="mt-4 p-4 text-center">
+        <button
+                type="button"
+                class="bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors transform">
+               <a href="{% url 'order_list' %}">Cancel..)Back To Order List Page</a>
+        </button>
+    </div>
 
-    </form>
+    {% if error %}
+      <div class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+        {{ error }}
+      </div>
+    {% endif %}
+
+   </form>
 
     <div class="bg-gray-100 rounded-2xl p-6 mt-8">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">🔌 WebSocket Debug (For Real-Time Client Screen)</h3>
@@ -272,6 +274,11 @@
     </div>
   </div>
 
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.3/js.cookie.min.js" integrity="sha512-2ks6Kkujh+E0u9U5nH6N78RRdjAxZb1INMwMnHKZEBcNrdeyy1bkT8X2ywcXUZmMqYP0Pw5D4WCI+8YLCJxGyQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
   <script>
     const style = document.createElement('style');
     style.textContent = `
@@ -300,56 +307,63 @@
     });
 
     $(document).ready(function () {
-      // **MODIFIED JS:** Listen for the form's submit event instead of the button's click event
-      const paymentForm = document.getElementById('payment-form');
 
-      paymentForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevents the default form submission
 
-        const url = "{% url 'record_amount_paid' order_id %}";
-        const amountInput = document.getElementById('amount');
-        let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
+      // New, corrected code
+        const paymentForm = document.getElementById('payment-form');
 
-        if (!amount_paid_str || isNaN(amount_paid_str)) {
-          showErrorMessage("Please enter a valid amount.");
-          return;
-        }
-        const amount_paid = parseFloat(amount_paid_str);
-        if (amount_paid < 0) {
-          showErrorMessage("Amount cannot be negative.");
-          return;
-        }
+        paymentForm.addEventListener('submit', function(event) {
+          event.preventDefault(); // Prevents the default form submission
 
-        const confirmBtn = document.getElementById('confirmBtn');
-        const originalText = confirmBtn.innerHTML;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        confirmBtn.disabled = true;
+          // The rest of your existing logic for handling the AJAX call and validation.
+          const url = "{% url 'record_amount_paid' order_id %}";
+          const amountInput = document.getElementById('amount');
+          let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
 
-        $.ajax({
-          url: url,
-          type: 'POST',
-          data: { 'amount_paid': amount_paid_str },
-          dataType: 'json',
-        })
-        .done(function(data) {
-          handleResponse(data);
-        })
-        .fail(function(xhr, status, error) {
-          if (xhr.responseJSON) {
-            handleResponse(xhr.responseJSON);
-          } else if (status === 'timeout') {
-            showErrorMessage("Request timed out. Please check your connection.");
-          } else {
-            showErrorMessage("Network error. Please try again.");
+          // Your validation logic
+          if (!amount_paid_str || isNaN(amount_paid_str)) {
+            showErrorMessage("Please enter a valid amount.");
+            return;
           }
-        })
-        .always(function() {
-          confirmBtn.innerHTML = originalText;
-          confirmBtn.disabled = false;
+          const amount_paid = parseFloat(amount_paid_str);
+          if (amount_paid < 0) {
+            showErrorMessage("Amount cannot be negative.");
+            return;
+          }
+
+          // Find the button inside the form to update its state
+          const confirmBtn = document.getElementById('confirmBtn');
+          const originalText = confirmBtn.innerHTML;
+          confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+          confirmBtn.disabled = true;
+
+          // The rest of your AJAX call, which seems correct
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: { 'amount_paid': amount_paid_str },
+            dataType: 'json',
+          })
+          .done(function(data) {
+            handleResponse(data);
+          })
+          .fail(function(xhr, status, error) {
+            if (xhr.responseJSON) {
+              handleResponse(xhr.responseJSON);
+            } else if (status === 'timeout') {
+              showErrorMessage("Request timed out. Please check your connection.");
+            } else {
+              showErrorMessage("Network error. Please try again.");
+            }
+          })
+          .always(function() {
+            confirmBtn.innerHTML = originalText;
+            confirmBtn.disabled = false;
+          });
         });
-      });
 
       function handleResponse(data) {
+        // The rest of your existing handleResponse logic...
         const confirmBtn = document.querySelector('form button');
         const originalText = 'Confirm';
         confirmBtn.innerHTML = originalText;
@@ -360,9 +374,11 @@
           const change = parseFloat(data.change);
           const changeFormatted = Math.abs(change).toLocaleString();
 
+          // Update the Amount Paid and Change displays directly
           document.getElementById('amount-paid-display').textContent = paidFormatted;
           document.getElementById('change-display').textContent = changeFormatted;
 
+          // Set the text color for change to be red if negative
           const changeDisplayEl = document.getElementById('change-display');
           if (change < 0) {
             changeDisplayEl.style.color = '#dc2626'; // Tailwind's red-600
@@ -370,8 +386,10 @@
             changeDisplayEl.style.color = ''; // Reset to default blue
           }
 
+          // Show the print button after a successful payment
           document.getElementById('printReceiptBtn').classList.remove('hidden');
 
+          // Update receipt template data
           document.getElementById('receipt-paid').textContent = paidFormatted;
           document.getElementById('receipt-change').textContent = changeFormatted;
           const itemsContainer = document.getElementById('receiptItems');
@@ -431,7 +449,7 @@
     });
 </script>
 
-<script>
+  <script>
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(protocol + '://' + window.location.host + '/ws/client-screen/');
 
