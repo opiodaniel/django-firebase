@@ -89,14 +89,14 @@ def order_detail(request, order_id):
     change = 0
 
     # Handle POST request for payment
-    if request.method == 'POST':
-        try:
-            amount_paid = float(request.POST.get('amount_paid'))
-            change = int(amount_paid - amount_to_pay)
-            # You can also add logic here to update Firestore with the payment
-        except (ValueError, TypeError):
-            # Handle cases where amount_paid is not a valid number
-            pass
+    # if request.method == 'POST':
+    #     try:
+    #         amount_paid = float(request.POST.get('amount_paid'))
+    #         change = int(amount_paid - amount_to_pay)
+    #         # You can also add logic here to update Firestore with the payment
+    #     except (ValueError, TypeError):
+    #         # Handle cases where amount_paid is not a valid number
+    #         pass
 
     # New order details dictionary to send
     order_details_for_client = {
