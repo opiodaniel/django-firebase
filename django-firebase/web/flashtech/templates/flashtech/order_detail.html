@@ -77,7 +77,6 @@
             </div>
           </div>
         </div>
-
         <div class="flex-1 bg-gray-50 rounded-xl p-6">
           <h3 class="text-xl font-semibold text-gray-800 mb-4">Financial Summary</h3>
           <div class="space-y-3 text-gray-700">
@@ -89,17 +88,10 @@
               <span>Amount Paid:</span>
               <span class="text-green-600">Shs. <span id="amount-paid-display">{{ amount_paid|default:"0"|add_commas }}</span></span>
             </div>
-
-            <div id="change-display-row" class="flex justify-between {% if change <= 0 %}hidden{% endif %}">
+            <div id="change-display-row" class="flex justify-between">
               <span>Change Given:</span>
-              <span class="text-blue-600">Shs. <span id="change-display">{{ change|add_commas }}</span></span>
+              <span class="text-blue-600">Shs. <span id="change-display">{{ change|default:"0"|add_commas }}</span></span>
             </div>
-
-            <div id="status-row" class="flex justify-between {% if not amount_paid or amount_paid < amount_to_pay %}hidden{% endif %}">
-              <span>Status:</span>
-              <span id="payment-status" class="text-green-600">{% if amount_paid and amount_paid >= amount_to_pay %}Fully Paid{% endif %}</span>
-            </div>
-
             <button id="printReceiptBtn" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-green-700 transition-colors transform shadow-md mt-4 {% if not amount_paid or amount_paid < amount_to_pay %}hidden{% endif %}">
               <i class="fas fa-print text-sm"></i>
               <span>Print Receipt</span>
@@ -295,126 +287,118 @@
   </script>
 
   <script type="text/javascript">
-    var csrftoken = Cookies.get('csrftoken');
-    function csrfSafeMethod(method) {
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
+
+  var csrftoken = Cookies.get('csrftoken');
+  function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
       }
-    });
+    }
+  });
 
-    $(document).ready(function () {
+  $(document).ready(function () {
 
-      recordAmount = function(event) {
-        event.preventDefault();
-        const url = "{% url 'record_amount_paid' order_id %}";
-        const amountInput = document.getElementById('amount');
-        let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
+    recordAmount = function(event) {
+      event.preventDefault();
+      const url = "{% url 'record_amount_paid' order_id %}";
+      const amountInput = document.getElementById('amount');
+      let amount_paid_str = amountInput.value.replace(/,/g, "").trim();
 
-        if (!amount_paid_str || isNaN(amount_paid_str)) {
-          showErrorMessage("Please enter a valid amount.");
-          return;
-        }
-        const amount_paid = parseFloat(amount_paid_str);
-        if (amount_paid < 0) {
-          showErrorMessage("Amount cannot be negative.");
-          return;
-        }
+      if (!amount_paid_str || isNaN(amount_paid_str)) {
+        showErrorMessage("Please enter a valid amount.");
+        return;
+      }
+      const amount_paid = parseFloat(amount_paid_str);
+      if (amount_paid < 0) {
+        showErrorMessage("Amount cannot be negative.");
+        return;
+      }
 
-        const confirmBtn = event.target.closest('button');
-        const originalText = confirmBtn.innerHTML;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        confirmBtn.disabled = true;
+      const confirmBtn = event.target.closest('button');
+      const originalText = confirmBtn.innerHTML;
+      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      confirmBtn.disabled = true;
 
-        $.ajax({
-          url: url,
-          type: 'POST',
-          data: { 'amount_paid': amount_paid_str },
-          dataType: 'json',
-        })
-        .done(function(data) {
-          handleResponse(data);
-        })
-        .fail(function(xhr, status, error) {
-          if (status === 'timeout') {
-            showErrorMessage("Request timed out. Please check your connection.");
-          } else {
-            try {
-              const data = JSON.parse(xhr.responseText);
-              handleResponse(data);
-            } catch (e) {
-              showErrorMessage("Network error. Please try again.");
-            }
-          }
-          confirmBtn.innerHTML = originalText;
-          confirmBtn.disabled = false;
-        });
-
-        function handleResponse(data) {
-          confirmBtn.innerHTML = originalText;
-          confirmBtn.disabled = false;
-
-          if (data.status === 'ok') {
-            const paidFormatted = Number(data.amount_paid).toLocaleString();
-            const change = parseFloat(data.change);
-            const changeFormatted = Math.abs(change).toLocaleString();
-
-            // Update the Financial Summary section directly
-            document.getElementById('amount-paid-display').textContent = paidFormatted;
-
-            // Show or hide the change section based on the change value
-            const changeRow = document.getElementById('change-display-row');
-            if (change > 0) {
-              changeRow.classList.remove('hidden');
-              document.getElementById('change-display').textContent = changeFormatted;
-            } else {
-              changeRow.classList.add('hidden');
-            }
-
-            // Show or hide the status section based on payment status
-            const statusRow = document.getElementById('status-row');
-            if (data.full_payment_made) {
-              statusRow.classList.remove('hidden');
-              document.getElementById('payment-status').textContent = 'Fully Paid';
-              document.getElementById('payment-form').style.display = 'none';
-            } else {
-              statusRow.classList.add('hidden');
-            }
-
-            // Show the print button
-            document.getElementById('printReceiptBtn').classList.remove('hidden');
-
-            // Update receipt template data
-            document.getElementById('receipt-paid').textContent = paidFormatted;
-            document.getElementById('receipt-change').textContent = changeFormatted;
-            const itemsContainer = document.getElementById('receiptItems');
-            itemsContainer.innerHTML = '';
-            if (data.order_items && Array.isArray(data.order_items)) {
-              data.order_items.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${item.name || 'Unknown Service'}</td>
-                  <td>Shs.${(item.price || 0).toLocaleString()}</td>
-                `;
-                itemsContainer.appendChild(row);
-              });
-            }
-
-            amountInput.value = '';
-
-          } else if (data.status === 'ko') {
-            let errorMsg = data.error || "Payment could not be processed.";
-            if (!errorMsg.trim()) errorMsg = "An unknown error occurred. Please try again.";
-            showErrorMessage(errorMsg);
-          } else {
-            showErrorMessage("Invalid response from server. Please contact support.");
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: { 'amount_paid': amount_paid_str },
+        dataType: 'json',
+      })
+      .done(function(data) {
+        handleResponse(data);
+      })
+      .fail(function(xhr, status, error) {
+        if (status === 'timeout') {
+          showErrorMessage("Request timed out. Please check your connection.");
+        } else {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            handleResponse(data);
+          } catch (e) {
+            showErrorMessage("Network error. Please try again.");
           }
         }
-      };
+        confirmBtn.innerHTML = originalText;
+        confirmBtn.disabled = false;
+      });
+    };
+
+    function handleResponse(data) {
+      const confirmBtn = document.querySelector('form button');
+      const originalText = 'Confirm';
+      confirmBtn.innerHTML = originalText;
+      confirmBtn.disabled = false;
+
+      if (data.status === 'ok') {
+        const paidFormatted = Number(data.amount_paid).toLocaleString();
+        const change = parseFloat(data.change);
+        const changeFormatted = Math.abs(change).toLocaleString();
+
+        // Update the Amount Paid and Change displays directly
+        document.getElementById('amount-paid-display').textContent = paidFormatted;
+        document.getElementById('change-display').textContent = changeFormatted;
+
+        // Set the text color for change to be red if negative
+        const changeDisplayEl = document.getElementById('change-display');
+        if (change < 0) {
+          changeDisplayEl.style.color = '#dc2626'; // Tailwind's red-600
+        } else {
+          changeDisplayEl.style.color = ''; // Reset to default blue
+        }
+
+        // Show the print button after a successful payment
+        document.getElementById('printReceiptBtn').classList.remove('hidden');
+
+        // Update receipt template data
+        document.getElementById('receipt-paid').textContent = paidFormatted;
+        document.getElementById('receipt-change').textContent = changeFormatted;
+        const itemsContainer = document.getElementById('receiptItems');
+        itemsContainer.innerHTML = '';
+        if (data.order_items && Array.isArray(data.order_items)) {
+          data.order_items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.name || 'Unknown Service'}</td>
+              <td>Shs.${(item.price || 0).toLocaleString()}</td>
+            `;
+            itemsContainer.appendChild(row);
+          });
+        }
+        document.getElementById('amount').value = '';
+
+      } else if (data.status === 'ko') {
+        let errorMsg = data.error || "Payment could not be processed.";
+        if (!errorMsg.trim()) errorMsg = "An unknown error occurred. Please try again.";
+        showErrorMessage(errorMsg);
+      } else {
+        showErrorMessage("Invalid response from server. Please contact support.");
+      }
+    }
 
       document.getElementById('printReceiptBtn').onclick = function() {
         const receiptContent = document.getElementById('receiptTemplate').innerHTML;
