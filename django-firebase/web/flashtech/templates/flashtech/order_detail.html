@@ -178,84 +178,105 @@
   </div>
 
   <div id="receiptTemplate" class="hidden">
-    <style>
-      body { font-family: monospace; background: #fff; margin: 0; padding: 0; }
-      .receipt { background: #fff; max-width: 380px; margin: 0 auto; padding: 1.5rem; border: 1px solid #ddd; box-shadow: none; }
-      .center { text-align: center; }
-      h1 { font-size: 1.2rem; margin: 0; }
-      .info p { margin: 2px 0; font-size: 0.9rem; }
-      .dashed { border-top: 1px dashed #000; margin: 10px 0; }
-      .details p { margin: 2px 0; display: flex; justify-content: space-between; }
-      .section-title { font-weight: bold; margin-bottom: 4px; text-decoration: underline; }
-      table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-      table th, table td { text-align: left; padding: 2px 0; }
-      table td:last-child { text-align: right; }
-      .summary p { display: flex; justify-content: space-between; font-weight: bold; margin: 4px 0; }
-      .footer { text-align: center; font-size: 0.9rem; margin-top: 10px; }
-      @media print {
-        * { color: #000 !important; background: transparent !important; box-shadow: none !important; border-color: #000 !important; }
-        .receipt { border: none !important; padding: 1rem !important; margin: 0 !important; }
-        .dashed { border-top: 1px solid #000 !important; }
-      }
-    </style>
-    <div class="receipt">
-      <div class="center">
-        <h1>SPARK AUTOMOTIVE</h1>
-        <div class="info">
-          <p>Plot 8, Kyanja</p>
-          <p>Kampala, Uganda</p>
-          <p>Tel: +254 782926508</p>
-          <p>Mail: info@sparkautomotive.com</p>
+      <style>
+        body { font-family: monospace; background: #fff; margin: 0; padding: 0; }
+        .receipt {
+            background: #fff;
+            max-width: 380px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        .center { text-align: center; }
+        h1 { font-size: 1.2rem; margin: 0; }
+        .info p { margin: 2px 0; font-size: 0.9rem; }
+        .dashed { border-top: 1px dashed #000; margin: 10px 0; }
+        .details p { margin: 2px 0; display: flex; justify-content: space-between; }
+        .section-title { font-weight: bold; margin-bottom: 4px; text-decoration: underline; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        table th, table td { text-align: left; padding: 2px 0; }
+        table td:last-child { text-align: right; }
+        .summary p { display: flex; justify-content: space-between; font-weight: bold; margin: 4px 0; }
+        .footer { text-align: center; font-size: 0.9rem; margin-top: 10px; }
+
+        /* Crucial changes for printing */
+        @media print {
+          body {
+              margin: 0;
+              padding: 0;
+              width: 100vw;
+              font-size: 10pt; /* Adjusted for better print readability */
+          }
+          .receipt {
+              border: none !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              max-width: none !important; /* Forces full width */
+              width: 100% !important; /* Ensures it fills the page */
+          }
+          * {
+              color: #000 !important;
+              background: transparent !important;
+              box-shadow: none !important;
+              border-color: #000 !important;
+          }
+          .dashed {
+              border-top: 1px dashed #000 !important;
+          }
+          h1 {
+              font-size: 1.5rem;
+          }
+        }
+      </style>
+      <div class="receipt">
+        <div class="center">
+          <h1>SPARK AUTOMOTIVE</h1>
+          <div class="info">
+            <p>Plot 8, Kyanja</p>
+            <p>Kampala, Uganda</p>
+            <p>Tel: +254 782926508</p>
+            <p>Mail: info@sparkautomotive.com</p>
+          </div>
+        </div>
+        <div class="dashed"></div>
+        <div class="details">
+          <p><span>Order ID:</span> <span id="receipt-order-id">{{ order_id }}</span></p>
+          <p><span>Order Type:</span> <span id="receipt-order-type">{{ order_type }}</span></p>
+        </div>
+        <div class="dashed"></div>
+        <div class="details">
+          <p class="section-title">Order Owner</p>
+          <p><span>Name:</span> <span id="receipt-owner-name">{{ order_owner.name }}</span></p>
+          <p><span>Email:</span> <span id="receipt-owner-email">{{ order_owner.email }}</span></p>
+          <p><span>Phone:</span> <span id="receipt-owner-phone">{{ order_owner.phone }}</span></p>
+        </div>
+        <div class="dashed"></div>
+        <div class="details">
+          <p class="section-title">Order Mechanic</p>
+          <p><span>Name:</span> <span id="receipt-mechanic-name">{{ order_mechanic.name }}</span></p>
+        </div>
+        <div class="dashed"></div>
+        <div class="details">
+          <p class="section-title">Vehicle</p>
+          <p><span>Mileage:</span> <span id="receipt-mileage">{{ mileage }}</span></p>
+          <p><span>Name:</span> <span id="receipt-vehicle-name">{{ vehicle_name }}</span></p>
+          <p><span>Number Plate:</span> <span id="receipt-plate">{{ vehicle_number_plate }}</span></p>
+        </div>
+        <div class="dashed"></div>
+        <div class="summary">
+          <p><span>Sub Total</span> <span>Shs.<span id="receipt-subtotal">{{ amount_to_pay|add_commas }}</span></span></p>
+          <p><span>Paid</span> <span>Shs.<span id="receipt-paid">{{ amount_paid|default:0 }}</span></span></p>
+          <p><span>Change</span> <span>Shs.<span id="receipt-change">{{ balance|add_commas }}</span></span></p>
+        </div>
+        <div class="dashed"></div>
+        <div class="footer">
+          <p>THANK YOU!</p>
+          <p>Glad to see you again!</p>
         </div>
       </div>
-      <div class="dashed"></div>
-      <div class="details">
-        <p><span>Order ID:</span> <span id="receipt-order-id">{{ order_id }}</span></p>
-        <p><span>Order Type:</span> <span id="receipt-order-type">{{ order_type }}</span></p>
-      </div>
-      <div class="dashed"></div>
-      <div class="details">
-        <p class="section-title">Order Owner</p>
-        <p><span>Name:</span> <span id="receipt-owner-name">{{ order_owner.name }}</span></p>
-        <p><span>Email:</span> <span id="receipt-owner-email">{{ order_owner.email }}</span></p>
-        <p><span>Phone:</span> <span id="receipt-owner-phone">{{ order_owner.phone }}</span></p>
-      </div>
-      <div class="dashed"></div>
-      <div class="details">
-        <p class="section-title">Order Mechanic</p>
-        <p><span>Name:</span> <span id="receipt-mechanic-name">{{ order_mechanic.name }}</span></p>
-      </div>
-      <div class="dashed"></div>
-      <div class="details">
-        <p class="section-title">Vehicle</p>
-        <p><span>Mileage:</span> <span id="receipt-mileage">{{ mileage }}</span></p>
-        <p><span>Name:</span> <span id="receipt-vehicle-name">{{ vehicle_name }}</span></p>
-        <p><span>Number Plate:</span> <span id="receipt-plate">{{ vehicle_number_plate }}</span></p>
-      </div>
-      <div class="dashed"></div>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody id="receiptItems">
-          </tbody>
-      </table>
-      <div class="dashed"></div>
-      <div class="summary">
-        <p><span>Sub Total</span> <span>Shs.<span id="receipt-subtotal">{{ amount_to_pay|add_commas }}</span></span></p>
-        <p><span>Paid</span> <span>Shs.<span id="receipt-paid">{{ amount_paid|default:0 }}</span></span></p>
-        <p><span>Change</span> <span>Shs.<span id="receipt-change">{{ balance|add_commas }}</span></span></p>
-      </div>
-      <div class="dashed"></div>
-      <div class="footer">
-        <p>THANK YOU!</p>
-        <p>Glad to see you again!</p>
-      </div>
-    </div>
   </div>
+
 
   <div id="errorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300 scale-95 opacity-0 animate-fadeIn">
@@ -375,19 +396,6 @@
 
           document.getElementById('receipt-paid').textContent = paidFormatted;
           document.getElementById('receipt-change').textContent = changeFormatted;
-          const itemsContainer = document.getElementById('receiptItems');
-          itemsContainer.innerHTML = '';
-          if (data.order_items && Array.isArray(data.order_items)) {
-            data.order_items.forEach(item => {
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${item.name || 'Unknown Service'}</td>
-                <td>Shs.${(item.price || 0).toLocaleString()}</td>
-              `;
-              itemsContainer.appendChild(row);
-            });
-          }
-          document.getElementById('amount').value = '';
 
         } else if (data.status === 'ko') {
           let errorMsg = data.error || "Payment could not be processed.";

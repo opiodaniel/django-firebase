@@ -108,8 +108,6 @@ def order_detail(request, order_id):
             'order_details': order_details_for_client,
         }
     )
-
-    # ... rest of the view logic remains the same
     context = {
         'order_id': order_id,
         'order_mechanic': order_mechanic,
@@ -186,11 +184,6 @@ def record_amount_paid(request, order_id):
             'amount_paid': amount_paid,
             'change': change,
             'value': amount_to_pay,
-            'order_items': [
-                {'name': 'Oil Change', 'price': 150000},
-                {'name': 'Brake Pads Replacement', 'price': 450000},
-                {'name': 'Tire Rotation', 'price': 60000}
-            ]
         })
 
     except (ValueError, TypeError) as e:
