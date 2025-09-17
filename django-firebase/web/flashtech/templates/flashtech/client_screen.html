@@ -1,3 +1,5 @@
+{% load custom_filters %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +12,6 @@
       font-family: 'Inter', sans-serif;
       background: linear-gradient(to bottom right, #fef3c7, #fed7aa); /* Warm background gradient */
     }
-    .card-shadow {
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
-    }
     .fade-in { animation: fadeIn 0.8s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -20,20 +19,15 @@
     .theme-gradient-card {
         background: linear-gradient(to bottom right, #fb923c, #f97316); /* orange-400 to orange-600 */
     }
-    .theme-gradient-logo-bg {
-        background: linear-gradient(to bottom right, #fdbf6b, #f59e0b); /* orange-300 to orange-500 */
-    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen">
 
   <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="flex flex-col items-center justify-center mb-8">
-      <div class="rounded-full p-4 card-shadow theme-gradient-logo-bg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/><path d="M15.535 8.465l-2.079 2.079 1.414 1.414 2.079-2.079-1.414-1.414z"/><path d="M8.465 15.535l-2.079-2.079-1.414 1.414 2.079 2.079 1.414-1.414z"/><path d="M12 8h-2c-1.103 0-2 .897-2 2v2c0 1.103.897 2 2 2h2v-4z"/><path d="M14 16h2c1.103 0 2-.897 2-2v-2c0-1.103-.897-2-2-2h-2v4z"/><path d="M12 10v4h2v-4h-2z"/>
-        </svg>
+    <div class="flex flex-col items-center justify-center mb-4">
+      <div class="rounded-full p-2 card-shadow theme-gradient-logo-bg">
+           <img src="{% static 'img/logo.png' %}" alt="Spark Automotive Logo" class="w-64 object-contain" />
       </div>
       <h1 class="text-4xl font-extrabold text-orange-600 mt-4">Spark Automotive</h1>
       <p class="text-orange-500">Your Trusted Vehicle Care Partner</p>
@@ -109,7 +103,7 @@
     </div>
   </main>
 
-  <div class="w-full max-w-4xl mx-auto text-center space-y-8">
+  <div class="w-full max-w-4xl mx-auto text-center space-y-8 hidden">
     <div class="mt-4 p-4 w-full max-w-md mx-auto bg-gray-100 rounded-lg">
       <h3 class="font-semibold text-gray-800 mb-2 text-center">🔌 WebSocket Debug (Client)</h3>
       <div id="client-log" class="text-xs text-gray-600 font-mono h-32 overflow-y-auto bg-gray-50 p-2 rounded"></div>

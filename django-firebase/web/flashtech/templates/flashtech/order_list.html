@@ -1,3 +1,5 @@
+{% load custom_filters %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,29 +17,34 @@
 <body class="bg-gradient-to-br from-orange-50 via-orange-25 to-red-50 min-h-screen font-sans">
 
   <!-- Header -->
-  <header class="bg-white shadow-sm border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-      <!-- Logo -->
-      <div class="flex items-center">
-        <img src="" alt="Your Brand Logo" class="h-10 object-contain" />
-        <h1 class="ml-4 text-2xl font-semibold text-gray-800">Service Orders</h1>
-      </div>
-
-      <!-- Optional: User profile or actions -->
-      <div class="flex items-center space-x-4">
-        <span class="text-sm text-gray-600">Welcome, Admin</span>
-        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium text-gray-700">
-          A
-        </div>
-      </div>
-    </div>
-  </header>
+{#  <header class="bg-white shadow-sm border-b border-gray-100">#}
+{#    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">#}
+{#      <!-- Logo -->#}
+{#      <div class="flex items-center">#}
+{#        <img src="{% static 'img/logo.png' %}" alt="Spark Automotive Logo" class="w-16 object-contain" />#}
+{#      </div>#}
+{##}
+{#      <!-- Optional: User profile or actions -->#}
+{#      <div class="flex items-center space-x-4">#}
+{#        <span class="text-sm text-gray-600">Welcome, Admin</span>#}
+{#        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium text-gray-700">#}
+{#          A#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </header>#}
 
   <!-- Main Content -->
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+
+    <div class="flex flex-col items-center justify-center mb-2">
+      <div class="rounded-full p-4 card-shadow theme-gradient-logo-bg">
+           <img src="{% static 'img/logo.png' %}" alt="Spark Automotive Logo" class="w-64 object-contain" />
+      </div>
+    </div>
 
     <!-- Search & Filter Form (CRITICAL: Uses GET method!) -->
-    <form method="get" class="mb-8 flex flex-col sm:flex-row gap-4">
+    <form method="get" class="mb-4 flex flex-col sm:flex-row gap-4">
       <!-- Search by Order ID -->
       <div class="flex-1 relative">
         <input
@@ -93,7 +100,7 @@
         <!-- Order Cards Loop -->
         {% for order in orders %}
           <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
-            <div class="p-6">
+            <div class="p-3">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div class="flex items-center">
                   <span class="text-lg font-semibold text-gray-800 mr-4">Order #{{ order.id }}</span>
