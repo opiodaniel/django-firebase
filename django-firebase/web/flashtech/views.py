@@ -24,7 +24,7 @@ def order_list(request):
     filter_type = request.GET.get('type', '').strip()
 
     # Fetch all orders from Firestore
-    orders_ref = db.collection('flashtech-order')
+    orders_ref = db.collection('flashtech-order').where('value', '>', 0)
     docs = orders_ref.stream()
     orders = []
 
