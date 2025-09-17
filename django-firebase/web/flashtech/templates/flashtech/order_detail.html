@@ -38,7 +38,7 @@
 
   <header class="bg-white shadow-sm border-b border-gray-200 w-full">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-      <img src="" alt="Spark Automotive Logo" class="h-10 object-contain" />
+      <img src="{% static 'img/logo.jpeg' %}" alt="Spark Automotive Logo" class="h-10 object-contain" />
       <h1 class="text-2xl font-bold text-gray-800">Payment Terminal</h1>
     </div>
   </header>
@@ -111,16 +111,19 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-600">
               Shs.
             </div>
+
             <input type="text"
-                   id="amount"
-                   name="amount_paid"
-                   min="0"
-                   step="100"
-                   placeholder="0.00"
-                   autocomplete="off"
-                   required
-                   class="w-full pl-10 pr-4 py-4 text-2xl font-bold text-gray-800 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-300"
-                   autofocus />
+               id="amount"
+               name="amount_paid"
+               min="0"
+               step="100"
+               placeholder="0.00"
+               autocomplete="off"
+               required
+               class="w-full pl-10 pr-4 py-4 text-2xl font-bold text-gray-800 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-300"
+               autofocus
+               inputmode="decimal" />
+
           </div>
         </div>
 
@@ -235,8 +238,8 @@
           <div class="info">
             <p>Plot 8, Kyanja</p>
             <p>Kampala, Uganda</p>
-            <p>Tel: +254 782926508</p>
-            <p>Mail: info@sparkautomotive.com</p>
+            <p>Tel: +256 782926508</p>
+            <p>Mail: sparkautomotiveug@gmail.com</p>
           </div>
         </div>
         <div class="dashed"></div>
@@ -276,7 +279,6 @@
         </div>
       </div>
   </div>
-
 
   <div id="errorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300 scale-95 opacity-0 animate-fadeIn">
@@ -495,21 +497,41 @@
     });
   </script>
 
+
+
   <script>
-    const amountInput = document.getElementById("amount");
+    // Get the input element
+    const amountInput = document.getElementById('amount');
 
-    amountInput.addEventListener("input", function (e) {
-      let value = e.target.value;
-      value = value.replace(/,/g, '');
-      if (!isNaN(value) && value !== "") {
-        const parts = value.split(".");
-        parts[0] = Number(parts[0]).toLocaleString();
-        e.target.value = parts.join(".");
-      }
-    });
+    // Add a listener for the 'input' event, which fires every time the value changes
+    amountInput.addEventListener('input', function(e) {
+        // Get the current value from the input field
+        let value = e.target.value;
 
-    amountInput.form?.addEventListener("submit", function () {
-      amountInput.value = amountInput.value.replace(/,/g, "");
+        // Step 1: Remove all non-numeric characters (except the decimal point)
+        // and existing commas.
+        let numericValue = value.replace(/[^0-9.]/g, '');
+
+        // Step 2: Format the number with commas using toLocaleString()
+        if (numericValue) {
+            // Split the value into integer and decimal parts
+            const parts = numericValue.split('.');
+            let integerPart = parts[0];
+            const decimalPart = parts[1];
+
+            // Use Intl.NumberFormat to add commas to the integer part
+            const formatter = new Intl.NumberFormat('en-US');
+            integerPart = formatter.format(parseInt(integerPart, 10));
+
+            // Reconstruct the value with the formatted integer part
+            if (decimalPart !== undefined) {
+                e.target.value = integerPart + '.' + decimalPart;
+            } else {
+                e.target.value = integerPart;
+            }
+        } else {
+            e.target.value = '';
+        }
     });
   </script>
 
