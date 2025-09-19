@@ -9,9 +9,13 @@ This project is built to improve operational efficiency and enhance the customer
 Key Features
 
 Real-time Updates: Utilizes WebSockets to provide instant updates on service progress and financial summaries to the client display screen.
+
 Responsive Design: The cashier and client interfaces are designed to be fully responsive, ensuring a clean and professional look on various devices, from desktop monitors to touch-screen terminals.
+
 Secure Payments: A dedicated payment terminal for cashiers simplifies the payment process with a clean, comma-formatted number input for accurate data entry.
+
 Automatic Receipt Generation: Generates clean, printer-friendly receipts that can be printed instantly, providing a professional and organized record for both the business and the customer.
+
 Centralized Data Management: Integrates with a backend database (e.g., Firestore) to centrally manage orders, client details, and service status.
 
 Technologies Used
@@ -19,8 +23,11 @@ Technologies Used
 Backend:
 
 Python: The core language for the application logic.
+
 Django: The web framework for building the application, including the admin interface and routing.
+
 Django Channels: Enables WebSocket functionality for real-time communication.
+
 Gunicorn / Daphne: ASGI server for handling asynchronous requests in a production environment.
 
 Frontend:
