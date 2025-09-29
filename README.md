@@ -50,6 +50,7 @@ pip (Python package installer)
 Git
 
 Steps
+
 Clone the Repository:
 
 Bash
@@ -63,12 +64,15 @@ Create and Activate a Virtual Environment:
 Bash
 
 python -m venv venv
+
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+
 Install Dependencies:
 
 Bash
 
 pip install -r requirements.txt
+
 Configure Database:
 
 Set up your Firestore project and download the service account key.
