@@ -54,8 +54,10 @@ Clone the Repository:
 
 Bash
 
-git clone https://github.com/your-username/your-repository-name.git
+git clone https://github.com/opiodaniel/django-firebase.git
+
 cd your-repository-name
+
 Create and Activate a Virtual Environment:
 
 Bash
