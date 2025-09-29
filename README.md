@@ -1,93 +1,72 @@
-# django-firebase
+💳 Flashtech Cashier Payment Terminal
+This project is a modern, web-based payment terminal designed for the Flashtech automotive workshop. It allows cashiers to efficiently process payments, calculate change, and print receipts for customer orders stored in a Google Firestore database.
 
-Spark Automotive: Smart Cashier System
+Tech Stack
+Category	Technology	Purpose
+Backend	Django	Python web framework handling routing, business logic, and server-side rendering (using Django templates).
+Database	Google Firestore (NoSQL)	Cloud-hosted database for storing and managing order and customer data.
+Frontend	HTML5/CSS3	Core structure and basic styling.
+Styling	Tailwind CSS	Utility-first CSS framework for rapid and responsive UI development.
+Interactivity	AJAX / jQuery / Vanilla JS	Handling real-time payment processing, modal pop-ups, and form submission without full page reloads.
+Real-time	Django Channels / WebSockets	Used for the "Client Screen" feature to display transaction updates in real-time.
 
-Project Overview
-Spark Automotive is a smart cashier system designed to streamline the payment and service tracking process for automotive repair businesses. This application provides a real-time, touch-enabled interface for cashiers to manage client orders and a live-updating display for customers to view their service and payment status.
-This project is built to improve operational efficiency and enhance the customer experience by providing transparency and automation in the service workflow.
+Project Setup Guide
+Follow these steps to get the project running on your local machine.
 
-Key Features
-
-Real-time Updates: Utilizes WebSockets to provide instant updates on service progress and financial summaries to the client display screen.
-
-Responsive Design: The cashier and client interfaces are designed to be fully responsive, ensuring a clean and professional look on various devices, from desktop monitors to touch-screen terminals.
-
-Secure Payments: A dedicated payment terminal for cashiers simplifies the payment process with a clean, comma-formatted number input for accurate data entry.
-
-Automatic Receipt Generation: Generates clean, printer-friendly receipts that can be printed instantly, providing a professional and organized record for both the business and the customer.
-
-Centralized Data Management: Integrates with a backend database (e.g., Firestore) to centrally manage orders, client details, and service status.
-
-Technologies Used
-
-Backend:
-
-Python: The core language for the application logic.
-
-Django: The web framework for building the application, including the admin interface and routing.
-
-Django Channels: Enables WebSocket functionality for real-time communication.
-
-Gunicorn / Daphne: ASGI server for handling asynchronous requests in a production environment.
-
-Frontend:
-
-HTML5: For structuring the web pages.
-CSS3 / Tailwind CSS: For modern, utility-first styling and responsive design.
-JavaScript: For dynamic client-side interactions, including real-time updates and input formatting.
-
-Database:
-
-Firestore: A NoSQL cloud database for storing and managing order data.
-Deployment:
-Render: A cloud platform used for deploying the application with full support for Django, WebSockets, and database services.
-
-Installation and Setup
 Prerequisites
-Python 3.8+
+You need Python 3.8+ installed on your system.
 
-pip (Python package installer)
-Git
-
-Steps
-
-Clone the Repository:
-
-Bash
-
+Clone the Repository
 git clone https://github.com/opiodaniel/django-firebase.git
+cd django-firebase/web
 
-cd your-repository-name
-
-Create and Activate a Virtual Environment:
-
-Bash
+Set up the Virtual Environment
+It's strongly recommended to use a virtual environment to manage dependencies.
 
 python -m venv venv
 
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+# Activate the virtual environment
+# On Linux/macOS:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
 
-Install Dependencies:
+Install Dependencies
+Install all required Python packages (including Django, Firebase Admin SDK, and Google Cloud Firestore).
 
-Bash
+pip install django google-cloud-firestore firebase-admin
 
-pip install -r requirements.txt
+Firebase/Firestore Setup
+The project relies on a connection to your Google Firestore database.
 
-Configure Database:
+Create a Firebase Project: If you haven't already, create a new project in the Firebase Console.
 
-Set up your Firestore project and download the service account key.
+Generate Service Account Key:
 
-Add your database credentials to settings.py or as environment variables.
+In the Firebase Console, navigate to Project Settings (⚙️) -> Service accounts.
 
+Click Generate new private key and download the JSON file.
+
+Configure Environment:
+
+Place the downloaded JSON key file (e.g., serviceAccountKey.json) in a secure, accessible directory within your project.
+
+In your Django settings file (settings.py), set the path to this key, or ensure your code initializes the Firebase Admin SDK using the path:
+
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# Initialize Firebase Admin SDK (replace 'path/to/your/key.json')
+cred = credentials.Certificate('path/to/your/key.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+Database Structure: Ensure you have a collection named flashtech-order with sample data, including a created_at timestamp field for sorting.
+
+Run the Server
+Apply Migrations (Standard Django setup):
 
 python manage.py migrate
-
-Run the Development Server:
-
-Bash
-
 python manage.py runserver
-The application will be available at http://127.0.0.1:8000.
 
-Contact
-For questions or support, please contact the developer at danielopio540@gmail.com
+The application will now be running at http://127.0.0.1:8000/. You can access your order list and payment terminal views from there.
